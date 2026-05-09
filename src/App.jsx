@@ -1,20 +1,16 @@
 import React from "react";
+import { supabase } from "./supabase";
 
 export default function App() {
   const fechaInicio = new Date("2025-01-01T00:00:00");
   const ahora = new Date();
 
   const diferencia = ahora - fechaInicio;
-
   const minutos = Math.floor(diferencia / 1000 / 60);
   const horas = Math.floor(diferencia / 1000 / 60 / 60);
   const dias = Math.floor(diferencia / 1000 / 60 / 60 / 24);
 
-  const [mensajes, setMensajes] = React.useState(() => {
-    const guardados = localStorage.getItem("mensajes");
-    return guardados ? JSON.parse(guardados) : [];
-  });
-
+  const [mensajes, setMensajes] = React.useState([]);
   const [nuevoMensaje, setNuevoMensaje] = React.useState("");
 
   const [album, setAlbum] = React.useState(() => {
@@ -31,8 +27,8 @@ export default function App() {
   });
 
   React.useEffect(() => {
-    localStorage.setItem("mensajes", JSON.stringify(mensajes));
-  }, [mensajes]);
+    cargarMensajes();
+  }, []);
 
   React.useEffect(() => {
     localStorage.setItem("album", JSON.stringify(album));
@@ -42,9 +38,39 @@ export default function App() {
     localStorage.setItem("playlist", JSON.stringify(playlist));
   }, [playlist]);
 
+  async function cargarMensajes() {
+    const { data, error } = await supabase
+      .from("mensajes")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.log("Error cargando mensajes:", error);
+      return;
+    }
+
+    setMensajes(data);
+  }
+
+  async function enviarMensaje() {
+    if (nuevoMensaje.trim() === "") return;
+
+    const { error } = await supabase
+      .from("mensajes")
+      .insert([{ texto: nuevoMensaje }]);
+
+    if (error) {
+      console.log("Error enviando mensaje:", error);
+      alert("No se pudo guardar el mensaje");
+      return;
+    }
+
+    setNuevoMensaje("");
+    cargarMensajes();
+  }
+
   function subirFoto(event) {
     const archivo = event.target.files[0];
-
     if (!archivo) return;
 
     const lector = new FileReader();
@@ -62,13 +88,6 @@ export default function App() {
     lector.readAsDataURL(archivo);
   }
 
-  function enviarMensaje() {
-    if (nuevoMensaje.trim() === "") return;
-
-    setMensajes([...mensajes, nuevoMensaje]);
-    setNuevoMensaje("");
-  }
-
   function agregarCancion() {
     if (nombreCancion.trim() === "" || linkCancion.trim() === "") return;
 
@@ -78,24 +97,8 @@ export default function App() {
     };
 
     setPlaylist([...playlist, nuevaCancion]);
-
     setNombreCancion("");
     setLinkCancion("");
-  }
-
-  function eliminarCancion(index) {
-    const nuevaPlaylist = playlist.filter((_, i) => i !== index);
-    setPlaylist(nuevaPlaylist);
-  }
-
-  function eliminarFoto(index) {
-    const nuevoAlbum = album.filter((_, i) => i !== index);
-    setAlbum(nuevoAlbum);
-  }
-
-  function eliminarMensaje(index) {
-    const nuevosMensajes = mensajes.filter((_, i) => i !== index);
-    setMensajes(nuevosMensajes);
   }
 
   return (
@@ -105,22 +108,21 @@ export default function App() {
           <h1 className="text-5xl font-bold text-pink-300 mb-4">
             Edith ❤️ Franchesco
           </h1>
-
           <p className="text-gray-200 text-lg">Nuestro tiempo juntos</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-          <div className="bg-zinc-900 rounded-3xl p-6 text-center border border-pink-500/20 shadow-lg shadow-pink-500/10">
+          <div className="bg-zinc-900 rounded-3xl p-6 text-center border border-pink-500/20">
             <h2 className="text-4xl font-bold text-pink-300">{dias}</h2>
             <p className="text-white mt-2">Días</p>
           </div>
 
-          <div className="bg-zinc-900 rounded-3xl p-6 text-center border border-cyan-500/20 shadow-lg shadow-cyan-500/10">
+          <div className="bg-zinc-900 rounded-3xl p-6 text-center border border-cyan-500/20">
             <h2 className="text-4xl font-bold text-cyan-300">{horas}</h2>
             <p className="text-white mt-2">Horas</p>
           </div>
 
-          <div className="bg-zinc-900 rounded-3xl p-6 text-center border border-yellow-500/20 shadow-lg shadow-yellow-500/10">
+          <div className="bg-zinc-900 rounded-3xl p-6 text-center border border-yellow-500/20">
             <h2 className="text-4xl font-bold text-yellow-300">{minutos}</h2>
             <p className="text-white mt-2">Minutos</p>
           </div>
@@ -149,17 +151,14 @@ export default function App() {
 
           <button
             onClick={agregarCancion}
-            className="mt-4 bg-cyan-500 hover:bg-cyan-400 transition-all px-6 py-3 rounded-2xl font-bold text-white"
+            className="mt-4 bg-cyan-500 hover:bg-cyan-400 px-6 py-3 rounded-2xl font-bold text-white"
           >
             Agregar canción ❤️
           </button>
 
           <div className="mt-6 space-y-4">
             {playlist.map((cancion, index) => (
-              <div
-                key={index}
-                className="bg-black border border-zinc-700 rounded-2xl p-4"
-              >
+              <div key={index} className="bg-black border border-zinc-700 rounded-2xl p-4">
                 <h3 className="text-xl font-bold text-pink-300 mb-2">
                   {cancion.nombre}
                 </h3>
@@ -172,13 +171,6 @@ export default function App() {
                 >
                   Escuchar canción 🎵
                 </a>
-
-                <button
-                  onClick={() => eliminarCancion(index)}
-                  className="block mt-3 text-red-400 hover:text-red-300"
-                >
-                  Eliminar canción
-                </button>
               </div>
             ))}
           </div>
@@ -216,15 +208,7 @@ export default function App() {
                   <h3 className="text-xl font-bold text-pink-300">
                     {item.mes}
                   </h3>
-
                   <p className="text-gray-200 mt-2">{item.descripcion}</p>
-
-                  <button
-                    onClick={() => eliminarFoto(index)}
-                    className="mt-3 text-red-400 hover:text-red-300"
-                  >
-                    Eliminar foto
-                  </button>
                 </div>
               </div>
             ))}
@@ -233,7 +217,7 @@ export default function App() {
 
         <div className="bg-zinc-900 rounded-3xl p-6 border border-pink-500/20">
           <h2 className="text-3xl font-bold text-pink-300 mb-6">
-            Mensajes ❤️
+            Mensajes online ❤️
           </h2>
 
           <textarea
@@ -245,25 +229,18 @@ export default function App() {
 
           <button
             onClick={enviarMensaje}
-            className="mt-4 bg-pink-500 hover:bg-pink-400 transition-all px-6 py-3 rounded-2xl font-bold text-white"
+            className="mt-4 bg-pink-500 hover:bg-pink-400 px-6 py-3 rounded-2xl font-bold text-white"
           >
             Enviar mensaje
           </button>
 
           <div className="mt-6 space-y-4">
-            {mensajes.map((msg, index) => (
+            {mensajes.map((msg) => (
               <div
-                key={index}
+                key={msg.id}
                 className="bg-black border border-zinc-800 p-4 rounded-2xl text-white"
               >
-                <p>{msg}</p>
-
-                <button
-                  onClick={() => eliminarMensaje(index)}
-                  className="mt-3 text-red-400 hover:text-red-300"
-                >
-                  Eliminar mensaje
-                </button>
+                {msg.texto}
               </div>
             ))}
           </div>
