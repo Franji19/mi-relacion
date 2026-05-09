@@ -115,7 +115,7 @@ if (!logueado) {
     <div className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-black text-white flex items-center justify-center p-6">
       <div className="bg-zinc-900 border border-pink-500/20 rounded-3xl p-8 max-w-md w-full text-center shadow-lg shadow-pink-500/10">
 
-        <h1 className="text-4xl font-bold text-pink-300 mb-4">
+        <h1 className="text-4xl font-bold text-pink-200 mb-4">
           Edith ❤️ Franchesco
         </h1>
 
@@ -146,31 +146,31 @@ if (!logueado) {
     <div className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-black text-white p-6">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold text-pink-300 mb-4">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-pink-400 via-fuchsia-300 to-purple-400 bg-clip-text text-transparent mb-4 drop-shadow-lg">
             Edith ❤️ Franchesco
           </h1>
-          <p className="text-gray-200 text-lg">Nuestro tiempo juntos</p>
+          <p className="text-white text-lg font-semibold">💗 Nuestro tiempo juntos 💗</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
           <div className="bg-zinc-900 rounded-3xl p-6 text-center border border-pink-500/20">
-            <h2 className="text-4xl font-bold text-pink-300">{dias}</h2>
+            <h2 className="text-4xl font-bold text-pink-200">{dias}</h2>
             <p className="text-white mt-2">Días</p>
           </div>
 
           <div className="bg-zinc-900 rounded-3xl p-6 text-center border border-cyan-500/20">
-            <h2 className="text-4xl font-bold text-cyan-300">{horas}</h2>
+            <h2 className="text-4xl font-bold text-cyan-200">{horas}</h2>
             <p className="text-white mt-2">Horas</p>
           </div>
 
           <div className="bg-zinc-900 rounded-3xl p-6 text-center border border-yellow-500/20">
-            <h2 className="text-4xl font-bold text-yellow-300">{minutos}</h2>
+            <h2 className="text-4xl font-bold text-yellow-200">{minutos}</h2>
             <p className="text-white mt-2">Minutos</p>
           </div>
         </div>
 
         <div className="bg-zinc-900 rounded-3xl p-6 mb-10 border border-cyan-500/20">
-          <h2 className="text-3xl font-bold text-cyan-300 mb-6">
+          <h2 className="text-3xl font-bold text-cyan-200 mb-6">
             Playlist de la pareja 🎵
           </h2>
 
@@ -200,7 +200,7 @@ if (!logueado) {
           <div className="mt-6 space-y-4">
             {playlist.map((cancion, index) => (
               <div key={index} className="bg-black border border-zinc-700 rounded-2xl p-4">
-                <h3 className="text-xl font-bold text-pink-300 mb-2">
+                <h3 className="text-xl font-bold text-pink-200 mb-2">
                   {cancion.nombre}
                 </h3>
 
@@ -208,7 +208,7 @@ if (!logueado) {
                   href={cancion.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-cyan-300 underline"
+                  className="text-cyan-200 underline"
                 >
                   Escuchar canción 🎵
                 </a>
@@ -218,7 +218,7 @@ if (!logueado) {
         </div>
 
         <div className="bg-zinc-900 rounded-3xl p-6 mb-10 border border-yellow-500/20">
-          <h2 className="text-3xl font-bold text-yellow-300 mb-4">
+          <h2 className="text-3xl font-bold text-yellow-200 mb-4">
             Subir recuerdos 📸
           </h2>
 
@@ -231,7 +231,7 @@ if (!logueado) {
         </div>
 
         <div className="mb-10">
-          <h2 className="text-3xl font-bold text-pink-300 mb-6">Álbum ❤️</h2>
+          <h2 className="text-3xl font-bold text-pink-200 mb-6">Álbum ❤️</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {album.map((item, index) => (
@@ -246,10 +246,10 @@ if (!logueado) {
                 />
 
                 <div className="p-4">
-                  <h3 className="text-xl font-bold text-pink-300">
+                  <h3 className="text-xl font-bold text-pink-200">
                     {item.mes}
                   </h3>
-                  <p className="text-gray-200 mt-2">{item.descripcion}</p>
+                  <p className="text-white mt-2">{item.descripcion}</p>
                 </div>
               </div>
             ))}
@@ -257,7 +257,7 @@ if (!logueado) {
         </div>
 
         <div className="bg-zinc-900 rounded-3xl p-6 border border-pink-500/20">
-          <h2 className="text-3xl font-bold text-pink-300 mb-6">
+          <h2 className="text-3xl font-bold text-pink-200 mb-6">
             Mensajes online ❤️
           </h2>
 
