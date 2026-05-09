@@ -2,6 +2,16 @@ import React from "react";
 import { supabase } from "./supabase";
 
 export default function App() {
+  const [logueado, setLogueado] = React.useState(false);
+const [claveLogin, setClaveLogin] = React.useState("");
+
+function entrar() {
+  if (claveLogin === "edithfranchesco") {
+    setLogueado(true);
+  } else {
+    alert("Contraseña incorrecta");
+  }
+}
   const fechaInicio = new Date("2025-01-01T00:00:00");
   const ahora = new Date();
 
@@ -100,7 +110,38 @@ export default function App() {
     setNombreCancion("");
     setLinkCancion("");
   }
+if (!logueado) {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-black text-white flex items-center justify-center p-6">
+      <div className="bg-zinc-900 border border-pink-500/20 rounded-3xl p-8 max-w-md w-full text-center shadow-lg shadow-pink-500/10">
 
+        <h1 className="text-4xl font-bold text-pink-300 mb-4">
+          Edith ❤️ Franchesco
+        </h1>
+
+        <p className="text-gray-300 mb-6">
+          Ingresa la contraseña para entrar
+        </p>
+
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={claveLogin}
+          onChange={(e) => setClaveLogin(e.target.value)}
+          className="w-full p-3 rounded-2xl bg-black border border-zinc-700 text-white placeholder-gray-400 mb-4"
+        />
+
+        <button
+          onClick={entrar}
+          className="w-full bg-pink-500 hover:bg-pink-400 transition-all px-6 py-3 rounded-2xl font-bold text-white"
+        >
+          Entrar ❤️
+        </button>
+
+      </div>
+    </div>
+  );
+}
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-black text-white p-6">
       <div className="max-w-5xl mx-auto">
