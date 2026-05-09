@@ -6,7 +6,7 @@ export default function App() {
 const [claveLogin, setClaveLogin] = React.useState("");
 
 function entrar() {
-  if (claveLogin === "edithfranchesco") {
+  if (claveLogin === "lukacopito") {
     setLogueado(true);
   } else {
     alert("Contraseña incorrecta");
