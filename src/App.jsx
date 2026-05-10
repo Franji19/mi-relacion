@@ -31,22 +31,17 @@ function entrar() {
   const [nombreCancion, setNombreCancion] = React.useState("");
   const [linkCancion, setLinkCancion] = React.useState("");
 
-  const [playlist, setPlaylist] = React.useState(() => {
-    const guardada = localStorage.getItem("playlist");
-    return guardada ? JSON.parse(guardada) : [];
-  });
+  const [playlist, setPlaylist] = React.useState([]);
+  const [dedicadoPor, setDedicadoPor] = React.useState("");
 
   React.useEffect(() => {
     cargarMensajes();
+    cargarCanciones();
   }, []);
 
   React.useEffect(() => {
     localStorage.setItem("album", JSON.stringify(album));
   }, [album]);
-
-  React.useEffect(() => {
-    localStorage.setItem("playlist", JSON.stringify(playlist));
-  }, [playlist]);
 
   async function cargarMensajes() {
     const { data, error } = await supabase
@@ -61,6 +56,20 @@ function entrar() {
 
     setMensajes(data);
   }
+
+async function cargarCanciones() {
+  const { data, error } = await supabase
+  .from("canciones")
+  .select("*")
+   .order("created_at", { ascending: false });
+   if (error) {
+    console.log("Error cargando canciones:", error);
+    return;
+    }
+
+    setPlaylist(data);
+    }
+
 
   async function enviarMensaje() {
     if (nuevoMensaje.trim() === "") return;
@@ -98,18 +107,30 @@ function entrar() {
     lector.readAsDataURL(archivo);
   }
 
-  function agregarCancion() {
-    if (nombreCancion.trim() === "" || linkCancion.trim() === "") return;
+  async function agregarCancion() {
+  if (nombreCancion.trim() === "" || linkCancion.trim() === "") return;
 
-    const nuevaCancion = {
-      nombre: nombreCancion,
-      link: linkCancion,
-    };
+  const { error } = await supabase
+    .from("canciones")
+    .insert([
+      {
+        nombre: nombreCancion,
+        link: linkCancion,
+        dedicado_por: dedicadoPor || "Nosotros",
+      },
+    ]);
 
-    setPlaylist([...playlist, nuevaCancion]);
-    setNombreCancion("");
-    setLinkCancion("");
+  if (error) {
+    console.log("Error guardando canción:", error);
+    alert("No se pudo guardar la canción");
+    return;
   }
+
+  setNombreCancion("");
+  setLinkCancion("");
+  setDedicadoPor("");
+  cargarCanciones();
+}
 if (!logueado) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-black text-white flex items-center justify-center p-6">
@@ -189,7 +210,13 @@ if (!logueado) {
             onChange={(e) => setLinkCancion(e.target.value)}
             className="w-full p-3 rounded-2xl bg-black border border-zinc-700 text-white placeholder-gray-400"
           />
-
+<input
+  type="text"
+  placeholder="Dedicado por: Edith, Franchesco o ambos"
+  value={dedicadoPor}
+  onChange={(e) => setDedicadoPor(e.target.value)}
+  className="w-full p-3 rounded-2xl bg-black border border-zinc-700 text-white placeholder-gray-400 mt-4"
+/>
           <button
             onClick={agregarCancion}
             className="mt-4 bg-cyan-500 hover:bg-cyan-400 px-6 py-3 rounded-2xl font-bold text-white"
